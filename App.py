@@ -20,10 +20,14 @@ import pymysql
 from Courses import ds_course, web_course, android_course, ios_course, uiux_course, resume_videos, interview_videos
 import pafy
 import plotly.express as px
-import youtube_dl
+import yt_dlp 
+
 
 def fetch_yt_video(link):
-    video = pafy.new(link)
+    ydl_opts = {'quiet': True}  # Suppresses output, can be adjusted
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info_dict = ydl.extract_info(link, download=False)
+        return info_dict.get('title', 'Unknown Title')
     return video.title
 
 
@@ -98,20 +102,20 @@ def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand
 
 
 st.set_page_config(
-    page_title="Smart Resume Analyzer",
-    page_icon='./Logo/SRA_Logo.ico',
+    page_title="HireLens",
+    page_icon='./Logo/HireLens.ico',
 )
 
 
 def run():
-    st.title("Smart Resume Analyser")
+    st.title("HireLens")
     st.sidebar.markdown("# Choose User")
     activities = ["Normal User", "Admin"]
     choice = st.sidebar.selectbox("Choose among the given options:", activities)
     # link = '[©Developed by Spidy20](http://github.com/spidy20)'
     # st.sidebar.markdown(link, unsafe_allow_html=True)
-    img = Image.open('./Logo/SRA_Logo.jpg')
-    img = img.resize((250, 250))
+    img = Image.open('./Logo/HireLens.jpg')
+    img = img.resize((700,200))
     st.image(img)
 
     # Create the DB
@@ -396,8 +400,8 @@ def run():
         ad_user = st.text_input("Username")
         ad_password = st.text_input("Password", type='password')
         if st.button('Login'):
-            if ad_user == 'machine_learning_hub' and ad_password == 'mlhub123':
-                st.success("Welcome Kushal")
+            if ad_user == 'HireLens' and ad_password == 'hl123':
+                st.success("Welcome sindhu vukkurthy")
                 # Display Data
                 cursor.execute('''SELECT*FROM user_data''')
                 data = cursor.fetchall()
@@ -417,14 +421,14 @@ def run():
                 values = plot_data.Predicted_Field.value_counts()
                 print(values)
                 st.subheader("📈 **Pie-Chart for Predicted Field Recommendations**")
-                fig = px.pie(df, values=values, names=labels, title='Predicted Field according to the Skills')
+                fig = px.pie(values=values, names=values.index, title='Predicted Field according to the Skills')
                 st.plotly_chart(fig)
 
                 ### Pie chart for User's👨‍💻 Experienced Level
                 labels = plot_data.User_level.unique()
                 values = plot_data.User_level.value_counts()
                 st.subheader("📈 ** Pie-Chart for User's👨‍💻 Experienced Level**")
-                fig = px.pie(df, values=values, names=labels, title="Pie-Chart📈 for User's👨‍💻 Experienced Level")
+                fig = px.pie(values=values, names=values.index, title="Pie-Chart📈 for User's👨‍💻 Experienced Level")
                 st.plotly_chart(fig)
 
 
